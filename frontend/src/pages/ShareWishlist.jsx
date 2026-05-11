@@ -10,6 +10,7 @@ const ShareWishlist = () => {
   const [wishlist, setWishlist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [isShared, setIsShared] = useState(false);
 
   useEffect(() => {
     const fetchWishlist = async () => {
@@ -18,6 +19,7 @@ const ShareWishlist = () => {
           headers: { Authorization: `Bearer ${user.token}` },
         });
         setWishlist(response.data.wishlist);
+        setIsShared(response.data.wishlist.isShared || false);
       } catch (error) {
         alert('Failed to load wishlist.');
         navigate('/dashboard');
@@ -32,10 +34,24 @@ const ShareWishlist = () => {
     ? `${window.location.origin}/shared/${wishlist.shareLink}`
     : '';
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
+  const handleCopy = async () => {
+    try {
+      // Call share API to set isShared = true and lock existing items
+      if (!isShared) {
+        await axiosInstance.put(
+          `/api/wishlists/${id}/share`,
+          {},
+          { headers: { Authorization: `Bearer ${user.token}` } }
+        );
+        setIsShared(true);
+      }
+      // Copy link to clipboard
+      navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    } catch (error) {
+      alert('Failed to share wishlist.');
+    }
   };
 
   if (loading) return <div className="loading">Loading...</div>;
@@ -53,10 +69,25 @@ const ShareWishlist = () => {
             <strong> "{wishlist.name}"</strong>.
           </p>
 
+          {/* Lock warning — shown after sharing */}
+          {isShared && (
+            <div style={{
+              background: '#fff8e1',
+              border: '1px solid #f9a825',
+              borderRadius: '8px',
+              padding: '10px 14px',
+              marginBottom: '16px',
+              fontSize: '0.875rem',
+              color: '#5d4037',
+            }}>
+              🔒 <strong>This wishlist is shared and locked.</strong> Existing items cannot be edited or deleted. You can still add new items.
+            </div>
+          )}
+
           <div className="share-link-box">{shareUrl}</div>
 
           <button onClick={handleCopy} className="btn btn-primary" style={{ padding: '12px 32px' }}>
-            {copied ? '✅ Link Copied!' : '📋 Copy Link'}
+            {copied ? '✅ Link Copied!' : isShared ? '📋 Copy Link Again' : '📋 Copy & Share Link'}
           </button>
 
           <p style={{ color: '#7a5c5c', marginTop: '20px', fontSize: '0.85rem' }}>

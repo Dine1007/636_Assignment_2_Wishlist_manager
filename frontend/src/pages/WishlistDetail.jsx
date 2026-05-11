@@ -138,18 +138,26 @@ const WishlistDetail = () => {
               )}
             </div>
             <div className="item-actions">
-              <button
-                onClick={() => navigate(`/wishlist/${id}/edit-item/${item._id}`)}
-                className="btn btn-primary btn-sm"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDeleteItem(item._id)}
-                className="btn btn-danger btn-sm"
-              >
-                Delete
-              </button>
+              {wishlist.isShared ? (
+                <span style={{ fontSize: '0.8rem', color: '#888' }}>
+                  🔒 Locked - list is shared
+                </span>
+              ) : (
+                <>
+                  <button
+                    onClick={() => navigate(`/wishlist/${id}/edit-item/${item._id}`)}
+                    className="btn btn-primary btn-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteItem(item._id)}
+                    className="btn btn-danger btn-sm"
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ))

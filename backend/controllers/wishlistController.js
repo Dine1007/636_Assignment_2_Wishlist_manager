@@ -89,6 +89,26 @@ const getSharedWishlist = async (req, res) => {
   }
 };
 
+//share wishlist - sets is shared to true and locks exisiting items
+const shareWishlist = async (req, res) => {
+  try {
+    const wishlist = await Wishlist.findOne({ _id: req.params.id, owner: req.user.id });
+    if (!wishlist) return res.status(404).json({ message: 'Wishlist not found' });
+
+    //set isshared to true - triggers wishlistLockGuard to lock existing items
+    wishlist.isShared = true;
+    await wishlist.save();
+    
+    res.json({ 
+      message: 'Wishlist is now shared and locked.',
+      shareLink: wishlist.shareLink,
+      isShared: wishlist.isShared,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createWishlist,
   getMyWishlists,
@@ -96,4 +116,5 @@ module.exports = {
   updateWishlist,
   deleteWishlist,
   getSharedWishlist,
+  shareWishlist,
 };
