@@ -1,31 +1,25 @@
-import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../axiosConfig';
+// pages/CreateWishlist.jsx
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import wishListService from "../services/wishListService";
 
 const CreateWishlist = () => {
-  const { user } = useAuth();
-  const [name, setName] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     if (!name.trim()) {
-      setError('Please enter a wishlist name.');
+      setError("Please enter a wishlist name.");
       return;
     }
     try {
-      const response = await axiosInstance.post(
-        '/api/wishlists',
-        { name },
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
-      navigate(`/wishlist/${response.data._id}`);
-      
+      const wishlist = await wishListService.createWishlist(name);
+      navigate(`/wishlist/${wishlist._id}`);
     } catch (err) {
-      setError('Failed to create wishlist. Please try again.');
+      setError("Failed to create wishlist. Please try again.");
     }
   };
 
