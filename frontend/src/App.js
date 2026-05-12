@@ -14,6 +14,19 @@ import GuestView from './pages/GuestView';
 import './App.css';
 
 function App() {
+  console.log({ 
+  Landing, 
+  Login, 
+  Register, 
+  Profile, 
+  Dashboard, 
+  CreateWishlist, 
+  WishlistDetail, 
+  AddItem, 
+  EditItem, 
+  ShareWishlist, 
+  GuestView 
+});
   return (
     <Router>
       <Navbar />
