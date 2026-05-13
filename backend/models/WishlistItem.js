@@ -10,6 +10,11 @@ const wishlistItemSchema = new mongoose.Schema({
   reservedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
   purchasedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
     
+  // Group gifting 
+  isGroupGift:       { type: Boolean, default: false },
+  maxContributors:   { type: Number, enum: [2, 3], default: null },
+  groupContributors: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('WishlistItem', wishlistItemSchema);

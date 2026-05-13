@@ -3,6 +3,12 @@ const router = express.Router();
 const { addItem, updateItem, deleteItem, reserveItem,unreserveItem,purchaseItem,
 } = require('../controllers/itemController');
 
+const {
+  joinGroupGift,
+  leaveGroupGift,
+  purchaseGroupGift,
+} = require('../controllers/groupController');
+
 const { protect } = require('../middleware/authMiddleware');
 const { wishlistLockGuard } = require('../middleware/wishlistLockGuard');
 
@@ -19,5 +25,11 @@ router.delete('/:wishlistId/items/:itemId', protect, wishlistLockGuard, deleteIt
 router.put('/items/:itemId/reserve', protect, reserveItem);
 router.put('/items/:itemId/unreserve', protect, unreserveItem);
 router.put('/items/:itemId/purchase', protect, purchaseItem);
+
+// Group gifting routes 
+router.post  ('/items/:itemId/group/join', protect, joinGroupGift);
+router.delete('/items/:itemId/group/leave', protect, leaveGroupGift);
+router.put   ('/items/:itemId/group/purchase', protect, purchaseGroupGift);
+
 
 module.exports = router;

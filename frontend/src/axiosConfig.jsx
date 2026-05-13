@@ -2,10 +2,10 @@ import axios from "axios";
 
 // Singleton — one shared axios instance for the entire app
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5001",
-  // baseURL: 'http://3.106.249.235:5001', // live
+    baseURL: 'http://localhost:5001', // local
+    //baseURL: 'http://3.106.249.235:5001', // live
+    headers: { 'Content-Type': 'application/json' },
 
-  headers: { "Content-Type": "application/json" },
 });
 
 // Adapter — intercepts every request and attaches the token

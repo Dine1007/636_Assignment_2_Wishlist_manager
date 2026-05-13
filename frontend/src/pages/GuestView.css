@@ -1,0 +1,327 @@
+/* ==========================================
+   Group Gifting Styles
+   ========================================== */
+
+/* Status messages */
+.status-msg {
+  font-size: 0.875rem;
+  margin: 0;
+  padding: 4px 0;
+}
+
+.status-purchased {
+  color: #922b21;
+}
+
+.status-reserved {
+  color: #6b5b95;
+}
+
+/* Group gift badge */
+.badge-group {
+  background-color: #EEEDFE;
+  color: #26215C;
+}
+
+.badge-group-full {
+  background-color: #f5c6cb;
+  color: #721c24;
+}
+
+/* Group section container */
+.group-section {
+  background-color: #f9f6f0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #e8ddd0;
+}
+
+/* Progress bar */
+.group-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #7a5c5c;
+  margin-bottom: 4px;
+}
+
+.group-progress-track {
+  height: 6px;
+  background-color: #ede8df;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.group-progress-fill {
+  height: 100%;
+  background-color: #6b3a3a;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Contributor avatars row */
+.group-avatars {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.group-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.group-avatar-filled {
+  background-color: #f0e6d3;
+  border: 1px solid #c4a882;
+  color: #6b3a3a;
+}
+
+.group-avatar-empty {
+  background-color: #ffffff;
+  border: 1px dashed #c4a882;
+  color: #b0a090;
+  font-size: 16px;
+}
+
+.group-slots-label {
+  font-size: 11px;
+  color: #7a5c5c;
+}
+
+/* Group summary box */
+.group-summary {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  border: 1px solid #e8ddd0;
+}
+
+.group-summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+}
+
+.group-summary-label {
+  color: #7a5c5c;
+}
+
+.group-summary-value {
+  font-weight: 600;
+}
+
+.group-summary-divider {
+  height: 1px;
+  background-color: #e8ddd0;
+  margin: 6px 0;
+}
+
+.group-summary-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+}
+
+.group-summary-total-value {
+  font-weight: 600;
+  color: #6b3a3a;
+  font-size: 15px;
+}
+
+/* Group action buttons */
+.group-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-group-join {
+  background-color: #3B6D11;
+  border-color: #3B6D11;
+  color: #EAF3DE;
+}
+
+.btn-group-join:hover {
+  background-color: #2d5309;
+}
+
+.btn-group-start {
+  background-color: #e8f4e8;
+  border: 1px solid #3B6D11;
+  color: #27500A;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-group-start:hover {
+  background-color: #d4ebd4;
+}
+
+.btn-group-leave {
+  background-color: transparent;
+  border: 1px solid #c0392b;
+  color: #c0392b;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.btn-group-leave:hover {
+  background-color: #fdecea;
+}
+
+/* Share purchased badge */
+.share-purchased-badge {
+  font-size: 11px;
+  color: #27500A;
+  background-color: #EAF3DE;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* Group modal overlay */
+.group-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.group-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e8ddd0;
+  padding: 20px;
+  width: 100%;
+  max-width: 380px;
+}
+
+.group-modal h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #3d2c2c;
+}
+
+.group-modal-subtitle {
+  font-size: 12px;
+  color: #7a5c5c;
+  margin-bottom: 4px;
+}
+
+.group-modal-desc {
+  font-size: 12px;
+  color: #7a5c5c;
+  margin-bottom: 14px;
+}
+
+/* Contributor count selector */
+.contributor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.contributor-option {
+  background-color: #f9f6f0;
+  border: 1px solid #d5c4a1;
+  border-radius: 8px;
+  padding: 14px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.contributor-option:hover {
+  border-color: #6b3a3a;
+}
+
+.contributor-option.selected {
+  background-color: #f0e6d3;
+  border: 2px solid #6b3a3a;
+}
+
+.contributor-option-num {
+  font-size: 24px;
+  font-weight: 600;
+  color: #3d2c2c;
+}
+
+.contributor-option-num.selected {
+  color: #6b3a3a;
+}
+
+.contributor-option-label {
+  font-size: 11px;
+  color: #7a5c5c;
+  margin-top: 2px;
+}
+
+.contributor-option-price {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 4px;
+  color: #3d2c2c;
+}
+
+.contributor-option-price.selected {
+  color: #6b3a3a;
+}
+
+/* Modal note text */
+.group-modal-note {
+  font-size: 11px;
+  color: #7a5c5c;
+  margin-bottom: 12px;
+}
+
+/* Modal confirm button */
+.btn-group-confirm {
+  flex: 1;
+  padding: 10px;
+  font-size: 13px;
+  background-color: #6b3a3a;
+  color: #f5ebe0;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.btn-group-confirm:hover {
+  background-color: #5a2e2e;
+}
+
+.btn-group-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+}
