@@ -1,28 +1,32 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../axiosConfig';
+// pages/Profile.jsx
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import authService from "../services/authService";
 
 const Profile = () => {
   const { user } = useAuth();
-  const [formData, setFormData] = useState({ name: '', email: '', university: '', address: '' });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    university: "",
+    address: "",
+  });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get('/api/auth/profile', {
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
+        const data = await authService.getProfile();
         setFormData({
-          name: response.data.name || '',
-          email: response.data.email || '',
-          university: response.data.university || '',
-          address: response.data.address || '',
+          name: data.name || "",
+          email: data.email || "",
+          university: data.university || "",
+          address: data.address || "",
         });
       } catch (error) {
-        alert('Failed to fetch profile.');
+        alert("Failed to fetch profile.");
       } finally {
         setLoading(false);
       }
@@ -30,17 +34,19 @@ const Profile = () => {
     if (user) fetchProfile();
   }, [user]);
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axiosInstance.put('/api/auth/profile', formData, {
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
-      setMessage('Profile updated successfully!');
-      setTimeout(() => setMessage(''), 3000);
+      await authService.updateProfile(formData);
+      setMessage("Profile updated successfully!");
+      setTimeout(() => setMessage(""), 3000);
     } catch (error) {
-      alert('Failed to update profile.');
+      alert("Failed to update profile.");
     } finally {
       setLoading(false);
     }
@@ -58,22 +64,46 @@ const Profile = () => {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Name</label>
-            <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="form-input" />
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="form-input"
+            />
           </div>
           <div className="form-group">
             <label>Email</label>
-            <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="form-input" />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="form-input"
+            />
           </div>
           <div className="form-group">
             <label>University</label>
-            <input type="text" value={formData.university} onChange={(e) => setFormData({ ...formData, university: e.target.value })} className="form-input" />
+            <input
+              type="text"
+              name="university"
+              value={formData.university}
+              onChange={handleChange}
+              className="form-input"
+            />
           </div>
           <div className="form-group">
             <label>Address</label>
-            <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="form-input" />
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className="form-input"
+            />
           </div>
           <button type="submit" className="btn btn-dark w-full">
-            {loading ? 'Updating...' : 'Update Profile'}
+            {loading ? "Updating..." : "Update Profile"}
           </button>
         </form>
       </div>

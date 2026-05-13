@@ -1,17 +1,13 @@
-import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../axiosConfig';
+// components/TaskList.jsx
+import taskService from "../services/taskService";
 
 const TaskList = ({ tasks, setTasks, setEditingTask }) => {
-  const { user } = useAuth();
-
   const handleDelete = async (taskId) => {
     try {
-      await axiosInstance.delete(`/api/tasks/${taskId}`, {
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
+      await taskService.deleteTask(taskId);
       setTasks(tasks.filter((task) => task._id !== taskId));
     } catch (error) {
-      alert('Failed to delete task.');
+      alert("Failed to delete task.");
     }
   };
 
@@ -21,7 +17,9 @@ const TaskList = ({ tasks, setTasks, setEditingTask }) => {
         <div key={task._id} className="bg-gray-100 p-4 mb-4 rounded shadow">
           <h2 className="font-bold">{task.title}</h2>
           <p>{task.description}</p>
-          <p className="text-sm text-gray-500">Deadline: {new Date(task.deadline).toLocaleDateString()}</p>
+          <p className="text-sm text-gray-500">
+            Deadline: {new Date(task.deadline).toLocaleDateString()}
+          </p>
           <div className="mt-2">
             <button
               onClick={() => setEditingTask(task)}

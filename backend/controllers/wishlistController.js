@@ -1,111 +1,71 @@
-const Wishlist = require('../models/Wishlist');
-const WishlistItem = require('../models/WishlistItem');
+// controllers/wishlistController.js
+const wishlistUtil = require('../utils/wishlistUtil');
 
-// Create a new wishlist (Owner)
 const createWishlist = async (req, res) => {
   try {
-    const { name } = req.body;
-    const wishlist = await Wishlist.create({ name, owner: req.user.id });
+    const wishlist = await wishlistUtil.createWishlist(req.user.id, req.body.name);
     res.status(201).json(wishlist);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get all wishlists for the logged-in owner
 const getMyWishlists = async (req, res) => {
   try {
-    const wishlists = await Wishlist.find({ owner: req.user.id }).sort({ createdAt: -1 });
+    const wishlists = await wishlistUtil.getMyWishlists(req.user.id);
     res.json(wishlists);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get a single wishlist by ID 
 const getWishlistById = async (req, res) => {
   try {
-    const wishlist = await Wishlist.findOne({ _id: req.params.id, owner: req.user.id });
-    if (!wishlist) return res.status(404).json({ message: 'Wishlist not found' });
-    const items = await WishlistItem.find({ wishlist: wishlist._id });
-    // Surprise protection: owner always sees all items as "available"
-    const safeItems = items.map(item => ({
-      _id: item._id,
-      name: item.name,
-      price: item.price,
-      priority: item.priority,
-      url: item.url,
-      status: 'available',
-      wishlist: item.wishlist,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    }));
-    res.json({ wishlist, items: safeItems});
+    const result = await wishlistUtil.getWishlistById(req.params.id, req.user.id);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    const status = error.message === 'Wishlist not found' ? 404 : 500;
+    res.status(status).json({ message: error.message });
   }
 };
 
-// Update wishlist name (Owner)
 const updateWishlist = async (req, res) => {
   try {
-    const wishlist = await Wishlist.findOneAndUpdate(
-      { _id: req.params.id, owner: req.user.id },
-      { name: req.body.name },
-      { new: true }
-    );
-    if (!wishlist) return res.status(404).json({ message: 'Wishlist not found' });
+    const wishlist = await wishlistUtil.updateWishlist(req.params.id, req.user.id, req.body.name);
     res.json(wishlist);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    const status = error.message === 'Wishlist not found' ? 404 : 500;
+    res.status(status).json({ message: error.message });
   }
 };
 
-// Delete a wishlist and all its items (Owner)
 const deleteWishlist = async (req, res) => {
   try {
-    const wishlist = await Wishlist.findOneAndDelete({ _id: req.params.id, owner: req.user.id });
-    if (!wishlist) return res.status(404).json({ message: 'Wishlist not found' });
-    await WishlistItem.deleteMany({ wishlist: wishlist._id });
-    res.json({ message: 'Wishlist deleted' });
+    const result = await wishlistUtil.deleteWishlist(req.params.id, req.user.id);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    const status = error.message === 'Wishlist not found' ? 404 : 500;
+    res.status(status).json({ message: error.message });
   }
 };
 
-// Get shared wishlist by unique link (Guest view - shows REAL status)
 const getSharedWishlist = async (req, res) => {
   try {
-    const wishlist = await Wishlist.findOne({ shareLink: req.params.shareLink }).populate('owner', 'name');
-    if (!wishlist) return res.status(404).json({ message: 'Wishlist not found' });
-
-    const items = await WishlistItem.find({ wishlist: wishlist._id })
-      //.populate('reservedBy', 'name')
-      //.populate('purchasedBy', 'name');
-
-    res.json({ wishlist, items });
+    const result = await wishlistUtil.getSharedWishlist(req.params.shareLink);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    const status = error.message === 'Wishlist not found' ? 404 : 500;
+    res.status(status).json({ message: error.message });
   }
 };
 
-//share wishlist - sets is shared to true and locks exisiting items
 const shareWishlist = async (req, res) => {
   try {
-    const wishlist = await Wishlist.findOne({ _id: req.params.id, owner: req.user.id });
-    if (!wishlist) return res.status(404).json({ message: 'Wishlist not found' });
-
-    //set isshared to true - triggers wishlistLockGuard to lock existing items
-    wishlist.isShared = true;
-    await wishlist.save();
-    
-    res.json({ 
-      message: 'Wishlist is now shared and locked.',
-      shareLink: wishlist.shareLink,
-      isShared: wishlist.isShared,
-    });
+    const result = await wishlistUtil.shareWishlist(req.params.id, req.user.id);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    const status = error.message === 'Wishlist not found' ? 404 : 500;
+    res.status(status).json({ message: error.message });
   }
 };
 

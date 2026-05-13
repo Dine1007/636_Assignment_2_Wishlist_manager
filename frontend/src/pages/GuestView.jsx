@@ -26,7 +26,7 @@ const GuestView = () => {
       setWishlist(res.data.wishlist);
       setItems(res.data.items);
     } catch (err) {
-      setError('Wishlist not found or the link is invalid.');
+      setError("Wishlist not found or the link is invalid.");
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,10 @@ const GuestView = () => {
   };
 
   const handlePurchase = async (itemId) => {
-    if (!window.confirm('Mark this item as purchased? This action is permanent.')) return;
+    if (
+      !window.confirm("Mark this item as purchased? This action is permanent.")
+    )
+      return;
     setActionLoading(itemId);
     try {
       const res = await axiosInstance.put(`/api/wishlists/items/${itemId}/purchase`, {}, { headers: { Authorization: `Bearer ${user.token}` } });
@@ -316,7 +319,7 @@ const GuestView = () => {
       {/* Header */}
       <div className="guest-header">
         <h1>🎁 {wishlist.name}</h1>
-        <p>by {wishlist.owner?.name || 'Unknown'}</p>
+        <p>by {wishlist.owner?.name || "Unknown"}</p>
       </div>
 
       {/* Login prompt */}
@@ -347,7 +350,19 @@ const GuestView = () => {
               <span className={`priority-${item.priority?.toLowerCase()}`}>{item.priority} Priority</span>
               {item.url && <span> · <a href={item.url} target="_blank" rel="noreferrer" className="text-link">View Link</a></span>}
             </div>
-            <div className="item-actions">{renderItemActions(item)}</div>
+            <div className="item-actions">
+              {/* Factory — renders correct actions based on status + user */}
+              <ItemActions
+                item={item}
+                user={user}
+                actionLoading={actionLoading}
+                shareLink={shareLink}
+                onReserve={handleReserve}
+                onUnreserve={handleUnreserve}
+                onPurchase={handlePurchase}
+                navigate={navigate}
+              />
+            </div>
           </div>
         ))
       )}

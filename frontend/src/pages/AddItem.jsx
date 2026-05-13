@@ -1,36 +1,35 @@
-import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useParams, useNavigate } from 'react-router-dom';
-import axiosInstance from '../axiosConfig';
+// pages/AddItem.jsx
+import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import itemService from "../services/itemService";
 
 const AddItem = () => {
-  const { user } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    priority: 'Medium',
-    url: '',
+    name: "",
+    price: "",
+    priority: "Medium",
+    url: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     if (!formData.name.trim() || !formData.price) {
-      setError('Item name and price are required.');
+      setError("Item name and price are required.");
       return;
     }
     try {
-      await axiosInstance.post(
-        `/api/wishlists/${id}/items`,
-        { ...formData, price: Number(formData.price) },
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
+      await itemService.addItem(id, formData);
       navigate(`/wishlist/${id}`);
     } catch (err) {
-      setError('Failed to add item. Please try again.');
+      setError("Failed to add item. Please try again.");
     }
   };
 
@@ -44,9 +43,10 @@ const AddItem = () => {
             <label>Item Name</label>
             <input
               type="text"
+              name="name"
               placeholder="e.g. Sony Headphones"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={handleChange}
               className="form-input"
               required
             />
@@ -55,9 +55,10 @@ const AddItem = () => {
             <label>Price ($)</label>
             <input
               type="number"
+              name="price"
               placeholder="e.g. 350"
               value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              onChange={handleChange}
               className="form-input"
               required
               min="0"
@@ -67,8 +68,9 @@ const AddItem = () => {
           <div className="form-group">
             <label>Priority</label>
             <select
+              name="priority"
               value={formData.priority}
-              onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+              onChange={handleChange}
               className="form-select"
             >
               <option value="High">High</option>
@@ -80,9 +82,10 @@ const AddItem = () => {
             <label>URL (optional)</label>
             <input
               type="text"
+              name="url"
               placeholder="e.g. https://amazon.com/..."
               value={formData.url}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+              onChange={handleChange}
               className="form-input"
             />
           </div>
@@ -91,7 +94,10 @@ const AddItem = () => {
           </button>
         </form>
         <div className="text-center mt-3">
-          <button onClick={() => navigate(`/wishlist/${id}`)} className="btn btn-outline w-full">
+          <button
+            onClick={() => navigate(`/wishlist/${id}`)}
+            className="btn btn-outline w-full"
+          >
             ← Back to Wishlist
           </button>
         </div>
