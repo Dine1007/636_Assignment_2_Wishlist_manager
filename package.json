@@ -8,10 +8,14 @@
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm start --prefix frontend\""
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "chai": "^5.1.2",
     "concurrently": "^7.0.0",
     "mocha": "^11.0.1"
   },
   "author": "Gift Manager Team",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "all": "^0.0.0"
+  }
 }

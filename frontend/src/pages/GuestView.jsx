@@ -17,8 +17,9 @@ const GuestView = () => {
   const [selectedContributors, setSelectedContributors] = useState(3);
   const [groupLoading, setGroupLoading]   = useState('');
 
-  useEffect(() => { fetchSharedWishlist(); }, [shareLink]);
-
+  useEffect(() => {
+    fetchSharedWishlist();
+  }, [fetchSharedWishlist]);
   /* ── Fetch wishlist ── */
   const fetchSharedWishlist = async () => {
     try {
@@ -212,7 +213,7 @@ const GuestView = () => {
   };
 
   /* ── Item actions ── */
-  const renderItemActions = (item) => {
+  const ItemActions = (item) => {
     if (item.status === 'purchased' && !item.isGroupGift) {
       return <p className="status-msg status-purchased">This item has been purchased</p>;
     }
@@ -319,6 +320,11 @@ const GuestView = () => {
       {/* Header */}
       <div className="guest-header">
         <h1>🎁 {wishlist.name}</h1>
+        {wishlist.dueDate && (
+          <p style={{ margin: "0.25rem 0 0", fontSize: "0.95rem", opacity: 0.9 }}>
+            Due: {new Date(wishlist.dueDate).toLocaleDateString()}
+          </p>
+        )}
         <p>by {wishlist.owner?.name || "Unknown"}</p>
       </div>
 

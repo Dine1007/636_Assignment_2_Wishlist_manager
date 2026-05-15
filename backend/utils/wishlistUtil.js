@@ -2,8 +2,9 @@
 const Wishlist = require('../models/Wishlist');
 const WishlistItem = require('../models/WishlistItem');
 
-const createWishlist = async (userId, name) => {
-  const wishlist = await Wishlist.create({ name, owner: userId });
+const createWishlist = async (userId, name, dueDate) => {
+  const data = { name, owner: userId, dueDate: new Date(dueDate) };
+  const wishlist = await Wishlist.create(data);
   return wishlist;
 };
 

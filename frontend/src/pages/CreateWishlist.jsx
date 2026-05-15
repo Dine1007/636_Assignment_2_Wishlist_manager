@@ -5,6 +5,7 @@ import wishListService from "../services/wishListService";
 
 const CreateWishlist = () => {
   const [name, setName] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -15,11 +16,18 @@ const CreateWishlist = () => {
       setError("Please enter a wishlist name.");
       return;
     }
+    if (!dueDate) {
+      setError("Please choose a due date.");
+      return;
+    }
     try {
-      const wishlist = await wishListService.createWishlist(name);
+      const wishlist = await wishListService.createWishlist(name.trim(), dueDate);
       navigate(`/wishlist/${wishlist._id}`);
     } catch (err) {
-      setError("Failed to create wishlist. Please try again.");
+      setError(
+        err.response?.data?.message ||
+          "Failed to create wishlist. Please try again."
+      );
     }
   };
 
@@ -36,6 +44,16 @@ const CreateWishlist = () => {
               placeholder="e.g. Sarah's 30th Birthday"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="form-input"
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Due date</label>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
               className="form-input"
               required
             />

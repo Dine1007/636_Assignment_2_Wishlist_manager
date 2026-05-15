@@ -120,9 +120,16 @@ const WishlistDetail = () => {
           </div>
         ) : (
           <div className="flex-between">
-            <h1 style={{ color: "#6b3a3a", fontSize: "1.4rem", margin: 0 }}>
-              📋 {wishlist.name}
-            </h1>
+            <div>
+              <h1 style={{ color: "#6b3a3a", fontSize: "1.4rem", margin: 0 }}>
+                📋 {wishlist.name}
+              </h1>
+              {wishlist.dueDate && (
+                <p style={{ margin: "0.35rem 0 0", color: "#7a5c5c", fontSize: "0.95rem" }}>
+                  Due: {new Date(wishlist.dueDate).toLocaleDateString()}
+                </p>
+              )}
+            </div>
             <button
               onClick={() => setEditingName(true)}
               className="btn btn-outline btn-sm"

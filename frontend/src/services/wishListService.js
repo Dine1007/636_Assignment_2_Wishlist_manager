@@ -1,8 +1,8 @@
 // services/wishListService.js
 import axiosInstance from '../axiosConfig';
 
-const createWishlist = async (name) => {
-  const response = await axiosInstance.post('/api/wishlists', { name });
+const createWishlist = async (name, dueDate) => {
+  const response = await axiosInstance.post('/api/wishlists', { name, dueDate });
   return response.data;
 };
 

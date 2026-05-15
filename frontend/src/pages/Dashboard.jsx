@@ -68,6 +68,11 @@ const Dashboard = () => {
                 <p>
                   Created: {new Date(wishlist.createdAt).toLocaleDateString()}
                 </p>
+                {wishlist.dueDate && (
+                  <p style={{ marginTop: "0.25rem", fontWeight: 500 }}>
+                    Due: {new Date(wishlist.dueDate).toLocaleDateString()}
+                  </p>
+                )}
               </div>
               <div className="flex-gap">
                 <button
