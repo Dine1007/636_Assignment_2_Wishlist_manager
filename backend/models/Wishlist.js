@@ -4,6 +4,7 @@ const { generateShareLink } = require('../utils/linkGenerator');
 
 const wishlistSchema = new mongoose.Schema({
   name:      { type: String, required: true },
+  dueDate:   { type: Date },
   owner:     { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   shareLink: { type: String, unique: true },
   isShared:  { type: Boolean, default: false },

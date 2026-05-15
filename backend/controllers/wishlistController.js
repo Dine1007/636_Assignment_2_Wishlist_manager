@@ -3,7 +3,18 @@ const wishlistUtil = require('../utils/wishlistUtil');
 
 const createWishlist = async (req, res) => {
   try {
-    const wishlist = await wishlistUtil.createWishlist(req.user.id, req.body.name);
+    const { name, dueDate } = req.body;
+    if (!name?.trim()) {
+      return res.status(400).json({ message: 'Wishlist name is required.' });
+    }
+    if (!dueDate) {
+      return res.status(400).json({ message: 'Due date is required.' });
+    }
+    const parsedDue = new Date(dueDate);
+    if (Number.isNaN(parsedDue.getTime())) {
+      return res.status(400).json({ message: 'Invalid due date.' });
+    }
+    const wishlist = await wishlistUtil.createWishlist(req.user.id, name.trim(), dueDate);
     res.status(201).json(wishlist);
   } catch (error) {
     res.status(500).json({ message: error.message });

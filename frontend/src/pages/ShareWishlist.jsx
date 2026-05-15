@@ -64,7 +64,14 @@ const ShareWishlist = () => {
           <p style={{ color: "#7a5c5c", marginBottom: "16px" }}>
             Share this link with your friends so they can view and reserve items
             from
-            <strong> "{wishlist.name}"</strong>.
+            <strong> "{wishlist.name}"</strong>
+            {wishlist.dueDate && (
+              <>
+                {" "}
+                (due {new Date(wishlist.dueDate).toLocaleDateString()})
+              </>
+            )}
+            .
           </p>
 
           {isShared && (
