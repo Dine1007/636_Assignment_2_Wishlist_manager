@@ -66,10 +66,7 @@ const ShareWishlist = () => {
             from
             <strong> "{wishlist.name}"</strong>
             {wishlist.dueDate && (
-              <>
-                {" "}
-                (due {new Date(wishlist.dueDate).toLocaleDateString()})
-              </>
+              <> (due {new Date(wishlist.dueDate).toLocaleDateString()})</>
             )}
             .
           </p>
