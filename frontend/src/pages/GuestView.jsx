@@ -1,25 +1,22 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import axiosInstance from '../axiosConfig';
-import './GuestView.css';
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import axiosInstance from "../axiosConfig";
+import "./GuestView.css";
 
 const GuestView = () => {
   const { user } = useAuth();
   const { shareLink } = useParams();
   const navigate = useNavigate();
-  const [wishlist, setWishlist]   = useState(null);
-  const [items, setItems]         = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [error, setError]         = useState('');
-  const [actionLoading, setActionLoading] = useState('');
-  const [groupModal, setGroupModal]       = useState(null);
+  const [wishlist, setWishlist] = useState(null);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [actionLoading, setActionLoading] = useState("");
+  const [groupModal, setGroupModal] = useState(null);
   const [selectedContributors, setSelectedContributors] = useState(3);
-  const [groupLoading, setGroupLoading]   = useState('');
+  const [groupLoading, setGroupLoading] = useState("");
 
-  useEffect(() => {
-    fetchSharedWishlist();
-  }, [fetchSharedWishlist]);
   /* ── Fetch wishlist ── */
   const fetchSharedWishlist = async () => {
     try {
@@ -33,34 +30,55 @@ const GuestView = () => {
     }
   };
 
+  useEffect(() => {
+    fetchSharedWishlist();
+  }, [shareLink]);
+
   /* ── Helpers ── */
   const shareAmt = (price, n) => Math.ceil(price / n);
 
   const isInGroup = (item) => {
     if (!user || !item.groupContributors) return false;
-    return item.groupContributors.some(c =>
-      (c._id?.toString() ?? c.toString()) === user.id.toString()
+    return item.groupContributors.some(
+      (c) => (c._id?.toString() ?? c.toString()) === user.id.toString(),
     );
   };
 
   /* ── Solo reserve / unreserve / purchase ── */
   const handleReserve = async (itemId) => {
-    if (!user) { navigate('/register', { state: { redirectTo: `/shared/${shareLink}` } }); return; }
+    if (!user) {
+      navigate("/register", { state: { redirectTo: `/shared/${shareLink}` } });
+      return;
+    }
     setActionLoading(itemId);
     try {
-      const res = await axiosInstance.put(`/api/wishlists/items/${itemId}/reserve`, {}, { headers: { Authorization: `Bearer ${user.token}` } });
-      setItems(prev => prev.map(i => i._id === itemId ? res.data : i));
-    } catch (err) { alert(err.response?.data?.message || 'Failed to reserve item.'); }
-    finally { setActionLoading(''); }
+      const res = await axiosInstance.put(
+        `/api/wishlists/items/${itemId}/reserve`,
+        {},
+        { headers: { Authorization: `Bearer ${user.token}` } },
+      );
+      setItems((prev) => prev.map((i) => (i._id === itemId ? res.data : i)));
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to reserve item.");
+    } finally {
+      setActionLoading("");
+    }
   };
 
   const handleUnreserve = async (itemId) => {
     setActionLoading(itemId);
     try {
-      await axiosInstance.put(`/api/wishlists/items/${itemId}/unreserve`, {}, { headers: { Authorization: `Bearer ${user.token}` } });
+      await axiosInstance.put(
+        `/api/wishlists/items/${itemId}/unreserve`,
+        {},
+        { headers: { Authorization: `Bearer ${user.token}` } },
+      );
       await fetchSharedWishlist();
-    } catch (err) { alert(err.response?.data?.message || 'Failed to un-reserve.'); }
-    finally { setActionLoading(''); }
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to un-reserve.");
+    } finally {
+      setActionLoading("");
+    }
   };
 
   const handlePurchase = async (itemId) => {
@@ -70,17 +88,31 @@ const GuestView = () => {
       return;
     setActionLoading(itemId);
     try {
-      const res = await axiosInstance.put(`/api/wishlists/items/${itemId}/purchase`, {}, { headers: { Authorization: `Bearer ${user.token}` } });
-      setItems(prev => prev.map(i => i._id === itemId ? res.data : i));
-    } catch (err) { alert(err.response?.data?.message || 'Failed to mark as purchased.'); }
-    finally { setActionLoading(''); }
+      const res = await axiosInstance.put(
+        `/api/wishlists/items/${itemId}/purchase`,
+        {},
+        { headers: { Authorization: `Bearer ${user.token}` } },
+      );
+      setItems((prev) => prev.map((i) => (i._id === itemId ? res.data : i)));
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to mark as purchased.");
+    } finally {
+      setActionLoading("");
+    }
   };
 
   /* ── Group gifting ── */
   const openGroupModal = (item) => {
-    if (!user) { navigate('/register', { state: { redirectTo: `/shared/${shareLink}` } }); return; }
+    if (!user) {
+      navigate("/register", { state: { redirectTo: `/shared/${shareLink}` } });
+      return;
+    }
     setSelectedContributors(3);
-    setGroupModal({ itemId: item._id, itemName: item.name, itemPrice: item.price });
+    setGroupModal({
+      itemId: item._id,
+      itemName: item.name,
+      itemPrice: item.price,
+    });
   };
 
   const handleStartGroupGift = async () => {
@@ -90,195 +122,335 @@ const GuestView = () => {
       await axiosInstance.post(
         `/api/wishlists/items/${groupModal.itemId}/group/join`,
         { maxContributors: selectedContributors },
-        { headers: { Authorization: `Bearer ${user.token}` } }
+        { headers: { Authorization: `Bearer ${user.token}` } },
       );
       setGroupModal(null);
       await fetchSharedWishlist();
-    } catch (err) { alert(err.response?.data?.message || 'Failed to start group gift.'); }
-    finally { setGroupLoading(''); }
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to start group gift.");
+    } finally {
+      setGroupLoading("");
+    }
   };
 
   const handleJoinGroup = async (itemId) => {
-    if (!user) { navigate('/register', { state: { redirectTo: `/shared/${shareLink}` } }); return; }
+    if (!user) {
+      navigate("/register", { state: { redirectTo: `/shared/${shareLink}` } });
+      return;
+    }
     setGroupLoading(itemId);
     try {
-      await axiosInstance.post(`/api/wishlists/items/${itemId}/group/join`, {}, { headers: { Authorization: `Bearer ${user.token}` } });
+      await axiosInstance.post(
+        `/api/wishlists/items/${itemId}/group/join`,
+        {},
+        { headers: { Authorization: `Bearer ${user.token}` } },
+      );
       await fetchSharedWishlist();
-    } catch (err) { alert(err.response?.data?.message || 'Failed to join.'); }
-    finally { setGroupLoading(''); }
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to join.");
+    } finally {
+      setGroupLoading("");
+    }
   };
 
   const handleGroupPurchase = async (itemId) => {
-    if (!window.confirm('Mark this gift as purchased? This will close the item for everyone.')) return;
+    if (
+      !window.confirm(
+        "Mark this gift as purchased? This will close the item for everyone.",
+      )
+    )
+      return;
     setGroupLoading(itemId);
     try {
-      await axiosInstance.put(`/api/wishlists/items/${itemId}/group/purchase`, {}, { headers: { Authorization: `Bearer ${user.token}` } });
+      await axiosInstance.put(
+        `/api/wishlists/items/${itemId}/group/purchase`,
+        {},
+        { headers: { Authorization: `Bearer ${user.token}` } },
+      );
       await fetchSharedWishlist();
-    } catch (err) { alert(err.response?.data?.message || 'Failed to mark as purchased.'); }
-    finally { setGroupLoading(''); }
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to mark as purchased.");
+    } finally {
+      setGroupLoading("");
+    }
   };
 
   const handleLeaveGroup = async (itemId) => {
-    if (!window.confirm('Leave this group gift? Your slot will be freed for others.')) return;
+    if (
+      !window.confirm(
+        "Leave this group gift? Your slot will be freed for others.",
+      )
+    )
+      return;
     setGroupLoading(itemId);
     try {
-      await axiosInstance.delete(`/api/wishlists/items/${itemId}/group/leave`, { headers: { Authorization: `Bearer ${user.token}` } });
+      await axiosInstance.delete(`/api/wishlists/items/${itemId}/group/leave`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
       await fetchSharedWishlist();
-    } catch (err) { alert(err.response?.data?.message || 'Failed to leave group.'); }
-    finally { setGroupLoading(''); }
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to leave group.");
+    } finally {
+      setGroupLoading("");
+    }
   };
 
   /* ── Status badge ── */
   const getStatusBadge = (item) => {
     if (item.isGroupGift) {
-      if (item.status === 'purchased') return <span className="badge badge-purchased">Purchased</span>;
-      if (item.status === 'reserved')  return <span className="badge badge-reserved">Group reserved ({item.maxContributors}/{item.maxContributors})</span>;
+      if (item.status === "purchased")
+        return <span className="badge badge-purchased">Purchased</span>;
+      if (item.status === "reserved")
+        return (
+          <span className="badge badge-reserved">
+            Group reserved ({item.maxContributors}/{item.maxContributors})
+          </span>
+        );
       const filled = item.groupContributors?.length || 0;
-      return <span className="badge badge-group">Group gift - {filled}/{item.maxContributors} joined</span>;
+      return (
+        <span className="badge badge-group">
+          Group gift - {filled}/{item.maxContributors} joined
+        </span>
+      );
     }
     switch (item.status) {
-      case 'available': return <span className="badge badge-available">Available</span>;
-      case 'reserved':  return <span className="badge badge-reserved">Reserved</span>;
-      case 'purchased': return <span className="badge badge-purchased">Purchased</span>;
-      default: return null;
+      case "available":
+        return <span className="badge badge-available">Available</span>;
+      case "reserved":
+        return <span className="badge badge-reserved">Reserved</span>;
+      case "purchased":
+        return <span className="badge badge-purchased">Purchased</span>;
+      default:
+        return null;
     }
   };
 
   /* ── Group section ── */
   const renderGroupSection = (item) => {
-    const filled    = item.groupContributors?.length || 0;
-    const max       = item.maxContributors || 3;
-    const share     = shareAmt(item.price, max);
-    const isMember  = isInGroup(item);
-    const isFull    = filled >= max;
-    const isPurchased = item.status === 'purchased';
+    console.log("item-----", item.item);
+
+    const filled = item.item.groupContributors?.length || 0;
+    const max = item.item.maxContributors || 3;
+    const share = shareAmt(item.item.price, max);
+    const isMember = isInGroup(item.item);
+    const isFull = filled >= max;
+    const isPurchased = item.item.status === "purchased";
 
     return (
       <div className="group-section">
         <div className="group-progress-header">
-          <span>{filled} of {max} contributors joined</span>
+          <span>
+            {filled} of {max} contributors joined
+          </span>
           <span>${share} each</span>
         </div>
         <div className="group-progress-track">
-          <div className="group-progress-fill" style={{ width: `${(filled / max) * 100}%` }} />
+          <div
+            className="group-progress-fill"
+            style={{ width: `${(filled / max) * 100}%` }}
+          />
         </div>
         <div className="group-avatars">
           {Array.from({ length: max }).map((_, i) => {
-            const c    = item.groupContributors?.[i];
-            const name = c?.name || (c ? 'G' : null);
+            const c = item.item.groupContributors?.[i];
+            const name = c?.name || (c ? "G" : null);
             return (
-              <div key={i} className={`group-avatar ${name ? 'group-avatar-filled' : 'group-avatar-empty'}`}>
-                {name ? name[0].toUpperCase() : '+'}
+              <div
+                key={i}
+                className={`group-avatar ${name ? "group-avatar-filled" : "group-avatar-empty"}`}
+              >
+                {name ? name[0].toUpperCase() : "+"}
               </div>
             );
           })}
           <span className="group-slots-label">
-            {isPurchased ? 'Gift purchased' : isFull ? 'Group full - waiting for purchase' : `${max - filled} slot${max - filled !== 1 ? 's' : ''} open`}
+            {isPurchased
+              ? "Gift purchased"
+              : isFull
+                ? "Group full - waiting for purchase"
+                : `${max - filled} slot${max - filled !== 1 ? "s" : ""} open`}
           </span>
         </div>
         {!isPurchased && (
           <div className="group-actions">
             {!isMember && !isFull && user && (
-              <button onClick={() => handleJoinGroup(item._id)} className="btn btn-sm btn-group-join" disabled={groupLoading === item._id}>
-                {groupLoading === item._id ? 'Joining...' : `Join group - $${share}`}
+              <button
+                onClick={() => handleJoinGroup(item.item._id)}
+                className="btn btn-sm btn-group-join"
+                disabled={groupLoading === item.item._id}
+              >
+                {groupLoading === item.item._id
+                  ? "Joining..."
+                  : `Join group - $${share}`}
               </button>
             )}
             {!isMember && !isFull && !user && (
-              <Link to="/register" state={{ redirectTo: `/shared/${shareLink}` }} className="btn btn-sm btn-group-join">
+              <Link
+                to="/register"
+                state={{ redirectTo: `/shared/${shareLink}` }}
+                className="btn btn-sm btn-group-join"
+              >
                 Register to join - ${share}
               </Link>
-              
             )}
             {isMember && (
               <>
-                
-                <button onClick={() => handleLeaveGroup(item._id)} className="btn-group-leave" disabled={groupLoading === item._id}>
+                <button
+                  onClick={() => handleLeaveGroup(item.item._id)}
+                  className="btn-group-leave"
+                  disabled={groupLoading === item.item._id}
+                >
                   Leave group
                 </button>
               </>
             )}
-            {isMember && isFull && user &&(
+            {isMember && isFull && user && (
               <>
-                <button onClick={() => handleGroupPurchase(item._id)} className="btn btn-purchased btn-sm" disabled={groupLoading === item._id}>
-                  {groupLoading === item._id ? '...' : 'Mark gift as purchased'}
+                <button
+                  onClick={() => handleGroupPurchase(item.item._id)}
+                  className="btn btn-purchased btn-sm"
+                  disabled={groupLoading === item.item._id}
+                >
+                  {groupLoading === item.item._id
+                    ? "..."
+                    : "Mark gift as purchased"}
                 </button>
-                
               </>
             )}
           </div>
         )}
-        {isPurchased && <span className="share-purchased-badge">Gift has been purchased</span>}
+        {isPurchased && (
+          <span className="share-purchased-badge">Gift has been purchased</span>
+        )}
       </div>
     );
   };
 
   /* ── Item actions ── */
   const ItemActions = (item) => {
-    if (item.status === 'purchased' && !item.isGroupGift) {
-      return <p className="status-msg status-purchased">This item has been purchased</p>;
+    if (item.item.status === "purchased" && !item.item.isGroupGift) {
+      return (
+        <p className="status-msg status-purchased">
+          This item has been purchased
+        </p>
+      );
     }
-    if (item.isGroupGift && item.groupContributors?.length > 0) {
+    if (item.item.isGroupGift && item.item.groupContributors?.length > 0) {
       return renderGroupSection(item);
     }
     if (!user) {
-      if (item.status === 'available') return (
-        <div className="flex-gap">
-          <button onClick={() => handleReserve(item._id)} className="btn btn-reserve btn-sm">Reserve alone</button>
-          <button onClick={() => openGroupModal(item)} className="btn-group-start">Start group gift</button>
-        </div>
+      if (item.item.status === "available")
+        return (
+          <div className="flex-gap">
+            <button
+              onClick={() => handleReserve(item.item._id)}
+              className="btn btn-reserve btn-sm"
+            >
+              Reserve alone
+            </button>
+            <button
+              onClick={() => openGroupModal(item.item)}
+              className="btn-group-start"
+            >
+              Start group gift
+            </button>
+          </div>
+        );
+      return (
+        <p className="status-msg status-reserved">
+          This item has been reserved
+        </p>
       );
-      return <p className="status-msg status-reserved">This item has been reserved</p>;
     }
-    if (item.status === 'available') return (
-      <div className="flex-gap">
-        <button onClick={() => handleReserve(item._id)} className="btn btn-reserve btn-sm" disabled={actionLoading === item._id}>
-          {actionLoading === item._id ? 'Reserving...' : 'Reserve alone'}
-        </button>
-        <button onClick={() => openGroupModal(item)} className="btn-group-start">Start group gift</button>
-      </div>
-    );
-    if (item.status === 'reserved') {
-      const mine = item.reservedBy && (
-        (item.reservedBy._id?.toString() ?? item.reservedBy.toString()) === user.id.toString()
-      );
-      if (mine) return (
+    if (item.item.status === "available")
+      return (
         <div className="flex-gap">
-          <button onClick={() => handleUnreserve(item._id)} className="btn btn-unreserve btn-sm" disabled={actionLoading === item._id}>
-            {actionLoading === item._id ? '...' : 'Un-reserve'}
+          <button
+            onClick={() => handleReserve(item.item._id)}
+            className="btn btn-reserve btn-sm"
+            disabled={actionLoading === item.item._id}
+          >
+            {actionLoading === item.item._id ? "Reserving..." : "Reserve alone"}
           </button>
-          <button onClick={() => handlePurchase(item._id)} className="btn btn-purchased btn-sm" disabled={actionLoading === item._id}>
-            {actionLoading === item._id ? '...' : 'Mark as Purchased'}
+          <button
+            onClick={() => openGroupModal(item.item)}
+            className="btn-group-start"
+          >
+            Start group gift
           </button>
         </div>
       );
-      return <p className="status-msg status-reserved">This item has been reserved</p>;
+    if (item.item.status === "reserved") {
+      const mine =
+        item.item.reservedBy &&
+        (item.item.reservedBy._id?.toString() ??
+          item.item.reservedBy.toString()) === user.id.toString();
+      if (mine)
+        return (
+          <div className="flex-gap">
+            <button
+              onClick={() => handleUnreserve(item.item._id)}
+              className="btn btn-unreserve btn-sm"
+              disabled={actionLoading === item.item._id}
+            >
+              {actionLoading === item.item._id ? "..." : "Un-reserve"}
+            </button>
+            <button
+              onClick={() => handlePurchase(item.item._id)}
+              className="btn btn-purchased btn-sm"
+              disabled={actionLoading === item.item._id}
+            >
+              {actionLoading === item.item._id ? "..." : "Mark as Purchased"}
+            </button>
+          </div>
+        );
+      return (
+        <p className="status-msg status-reserved">
+          This item has been reserved
+        </p>
+      );
     }
     return null;
   };
-
-  if (loading)    return <div className="loading">Loading wishlist...</div>;
-  if (error)      return <div className="container"><div className="alert-error">{error}</div></div>;
-  if (!wishlist)  return <div className="loading">Wishlist not found.</div>;
+  if (loading) return <div className="loading">Loading wishlist...</div>;
+  if (error)
+    return (
+      <div className="container">
+        <div className="alert-error">{error}</div>
+      </div>
+    );
+  if (!wishlist) return <div className="loading">Wishlist not found.</div>;
 
   return (
     <div className="container">
-
       {/* Group gift modal */}
       {groupModal && (
         <div className="group-modal-overlay">
           <div className="group-modal">
             <h3>Start group gift</h3>
-            <p className="group-modal-subtitle">{groupModal.itemName} - ${groupModal.itemPrice}</p>
+            <p className="group-modal-subtitle">
+              {groupModal.itemName} - ${groupModal.itemPrice}
+            </p>
             <p className="group-modal-desc">
-              You are the first contributor. How many people including you will split this gift?
+              You are the first contributor. How many people including you will
+              split this gift?
             </p>
             <div className="contributor-grid">
-              {[2, 3].map(num => (
-                <div key={num} onClick={() => setSelectedContributors(num)}
-                  className={`contributor-option ${selectedContributors === num ? 'selected' : ''}`}>
-                  <div className={`contributor-option-num ${selectedContributors === num ? 'selected' : ''}`}>{num}</div>
+              {[2, 3].map((num) => (
+                <div
+                  key={num}
+                  onClick={() => setSelectedContributors(num)}
+                  className={`contributor-option ${selectedContributors === num ? "selected" : ""}`}
+                >
+                  <div
+                    className={`contributor-option-num ${selectedContributors === num ? "selected" : ""}`}
+                  >
+                    {num}
+                  </div>
                   <div className="contributor-option-label">people</div>
-                  <div className={`contributor-option-price ${selectedContributors === num ? 'selected' : ''}`}>
+                  <div
+                    className={`contributor-option-price ${selectedContributors === num ? "selected" : ""}`}
+                  >
                     ${shareAmt(groupModal.itemPrice, num)} each
                   </div>
                 </div>
@@ -287,31 +459,58 @@ const GuestView = () => {
             <div className="group-summary">
               <div className="group-summary-row">
                 <span className="group-summary-label">Item price</span>
-                <span className="group-summary-value">${groupModal.itemPrice}</span>
+                <span className="group-summary-value">
+                  ${groupModal.itemPrice}
+                </span>
               </div>
               <div className="group-summary-row">
                 <span className="group-summary-label">Contributors</span>
-                <span className="group-summary-value">{selectedContributors} people</span>
+                <span className="group-summary-value">
+                  {selectedContributors} people
+                </span>
               </div>
               <div className="group-summary-row">
-                <span className="group-summary-label">Open slots after you</span>
-                <span className="group-summary-value">{selectedContributors - 1}</span>
+                <span className="group-summary-label">
+                  Open slots after you
+                </span>
+                <span className="group-summary-value">
+                  {selectedContributors - 1}
+                </span>
               </div>
               <div className="group-summary-divider" />
               <div className="group-summary-row">
-                <span className="group-summary-label" style={{ fontWeight: 500 }}>Your share</span>
-                <span className="group-summary-total-value">${shareAmt(groupModal.itemPrice, selectedContributors)}</span>
+                <span
+                  className="group-summary-label"
+                  style={{ fontWeight: 500 }}
+                >
+                  Your share
+                </span>
+                <span className="group-summary-total-value">
+                  ${shareAmt(groupModal.itemPrice, selectedContributors)}
+                </span>
               </div>
             </div>
             <p className="group-modal-note">
-              When all {selectedContributors} contributors join the item will be marked as reserved automatically.
-              Any one contributor can then mark the gift as purchased.
+              When all {selectedContributors} contributors join the item will be
+              marked as reserved automatically. Any one contributor can then
+              mark the gift as purchased.
             </p>
             <div className="modal-actions">
-              <button onClick={handleStartGroupGift} className="btn-group-confirm" disabled={groupLoading !== ''}>
-                {groupLoading ? 'Starting...' : `Confirm - join for $${shareAmt(groupModal.itemPrice, selectedContributors)}`}
+              <button
+                onClick={handleStartGroupGift}
+                className="btn-group-confirm"
+                disabled={groupLoading !== ""}
+              >
+                {groupLoading
+                  ? "Starting..."
+                  : `Confirm - join for $${shareAmt(groupModal.itemPrice, selectedContributors)}`}
               </button>
-              <button onClick={() => setGroupModal(null)} className="btn btn-sm">Cancel</button>
+              <button
+                onClick={() => setGroupModal(null)}
+                className="btn btn-sm"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
@@ -321,7 +520,9 @@ const GuestView = () => {
       <div className="guest-header">
         <h1>🎁 {wishlist.name}</h1>
         {wishlist.dueDate && (
-          <p style={{ margin: "0.25rem 0 0", fontSize: "0.95rem", opacity: 0.9 }}>
+          <p
+            style={{ margin: "0.25rem 0 0", fontSize: "0.95rem", opacity: 0.9 }}
+          >
             Due: {new Date(wishlist.dueDate).toLocaleDateString()}
           </p>
         )}
@@ -331,19 +532,35 @@ const GuestView = () => {
       {/* Login prompt */}
       {!user && (
         <div className="guest-login-prompt">
-          <p>Want to reserve an item? You'll need to create an account first.</p>
-          <div className="flex-gap" style={{ justifyContent: 'center' }}>
-            <Link to="/login" state={{ redirectTo: `/shared/${shareLink}` }} className="btn btn-dark btn-sm">Login</Link>
-            <Link to="/register" state={{ redirectTo: `/shared/${shareLink}` }} className="btn btn-primary btn-sm">Register</Link>
+          <p>
+            Want to reserve an item? You'll need to create an account first.
+          </p>
+          <div className="flex-gap" style={{ justifyContent: "center" }}>
+            <Link
+              to="/login"
+              state={{ redirectTo: `/shared/${shareLink}` }}
+              className="btn btn-dark btn-sm"
+            >
+              Login
+            </Link>
+            <Link
+              to="/register"
+              state={{ redirectTo: `/shared/${shareLink}` }}
+              className="btn btn-primary btn-sm"
+            >
+              Register
+            </Link>
           </div>
         </div>
       )}
 
       {/* Items */}
       {items.length === 0 ? (
-        <div className="empty-state"><p>This wishlist has no items yet.</p></div>
+        <div className="empty-state">
+          <p>This wishlist has no items yet.</p>
+        </div>
       ) : (
-        items.map(item => (
+        items.map((item) => (
           <div key={item._id} className="item-card">
             <div className="item-header">
               <div>
@@ -353,8 +570,23 @@ const GuestView = () => {
               <span className="item-price">${item.price}</span>
             </div>
             <div className="item-details">
-              <span className={`priority-${item.priority?.toLowerCase()}`}>{item.priority} Priority</span>
-              {item.url && <span> · <a href={item.url} target="_blank" rel="noreferrer" className="text-link">View Link</a></span>}
+              <span className={`priority-${item.priority?.toLowerCase()}`}>
+                {item.priority} Priority
+              </span>
+              {item.url && (
+                <span>
+                  {" "}
+                  ·{" "}
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-link"
+                  >
+                    View Link
+                  </a>
+                </span>
+              )}
             </div>
             <div className="item-actions">
               {/* Factory — renders correct actions based on status + user */}
