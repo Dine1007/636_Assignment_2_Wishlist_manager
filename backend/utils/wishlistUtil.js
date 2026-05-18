@@ -34,10 +34,19 @@ const getWishlistById = async (wishlistId, userId) => {
   return { wishlist, items: safeItems };
 };
 
-const updateWishlist = async (wishlistId, userId, name) => {
+const updateWishlist = async (wishlistId, userId, name, dueDate) => {
+  const updateFields = { name };
+
+  if (dueDate !== undefined) {
+    const parsed = new Date(dueDate);
+    if (Number.isNaN(parsed.getTime())) throw new Error('Invalid due date.');
+    updateFields.dueDate = parsed;
+    updateFields.reminder7DaySent = false;  // reset so reminders fire again
+    updateFields.reminder1DaySent = false;
+  }
   const wishlist = await Wishlist.findOneAndUpdate(
     { _id: wishlistId, owner: userId },
-    { name },
+    updateFields,
     { new: true }
   );
   if (!wishlist) throw new Error('Wishlist not found');

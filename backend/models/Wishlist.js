@@ -8,6 +8,8 @@ const wishlistSchema = new mongoose.Schema({
   owner:     { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   shareLink: { type: String, unique: true },
   isShared:  { type: Boolean, default: false },
+  reminder7DaySent: { type: Boolean, default: false },
+  reminder1DaySent: { type: Boolean, default: false },
 }, { timestamps: true });
 
 wishlistSchema.pre('save', function (next) {
