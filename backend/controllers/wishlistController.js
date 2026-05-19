@@ -42,10 +42,15 @@ const getWishlistById = async (req, res) => {
 
 const updateWishlist = async (req, res) => {
   try {
-    const wishlist = await wishlistUtil.updateWishlist(req.params.id, req.user.id, req.body.name);
+    const wishlist = await wishlistUtil.updateWishlist(
+      req.params.id,
+      req.user.id,
+      req.body.name,
+      req.body.dueDate,   // ← add this
+    );
     res.json(wishlist);
   } catch (error) {
-    const status = error.message === 'Wishlist not found' ? 404 : 500;
+    const status = ['Wishlist not found', 'Invalid due date.'].includes(error.message) ? 400 : 500;
     res.status(status).json({ message: error.message });
   }
 };

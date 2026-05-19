@@ -43,12 +43,18 @@ const WishlistDetail = () => {
   const [items, setItems] = useState([]);
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState("");
+  const [newDueDate, setNewDueDate] = useState("");
 
   const fetchWishlist = useCallback(async () => {
     try {
       const data = await wishListService.getWishlistById(id);
       setWishlist(data.wishlist);
       setNewName(data.wishlist.name);
+      setNewDueDate(
+        data.wishlist.dueDate
+          ? new Date(data.wishlist.dueDate).toISOString().split("T")[0]
+          : ""
+      );
       setItems(data.items);
     } catch (error) {
       alert("Failed to load wishlist.");
@@ -68,7 +74,7 @@ const WishlistDetail = () => {
 
   const handleUpdateName = async () => {
     try {
-      const updated = await wishListService.updateWishlist(id, newName);
+      const updated = await wishListService.updateWishlist(id, newName, newDueDate);
       setWishlist(updated);
       setEditingName(false);
     } catch (error) {
@@ -90,27 +96,42 @@ const WishlistDetail = () => {
   if (!wishlist) return <div className="loading">Wishlist not found.</div>;
 
   return (
-    <div className="container">
+     <div className="container">
       <div className="card mb-4">
         {editingName ? (
           <div>
-            <input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              className="form-input mb-2"
-            />
+            <div className="form-group">
+              <label>Wishlist Name</label>
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="form-input mb-2"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Due Date</label>
+              <input
+                type="date"
+                value={newDueDate}
+                onChange={(e) => setNewDueDate(e.target.value)}
+                className="form-input mb-2"
+              />
+            </div>
             <div className="flex-gap mt-2">
-              <button
-                onClick={handleUpdateName}
-                className="btn btn-primary btn-sm"
-              >
+              <button onClick={handleUpdateName} className="btn btn-primary btn-sm">
                 Save
               </button>
               <button
                 onClick={() => {
                   setEditingName(false);
                   setNewName(wishlist.name);
+                  setNewDueDate(
+                    wishlist.dueDate
+                      ? new Date(wishlist.dueDate).toISOString().split("T")[0]
+                      : ""
+                  );
                 }}
                 className="btn btn-outline btn-sm"
               >
@@ -134,7 +155,7 @@ const WishlistDetail = () => {
               onClick={() => setEditingName(true)}
               className="btn btn-outline btn-sm"
             >
-              Edit Name
+              Edit
             </button>
           </div>
         )}
@@ -170,19 +191,13 @@ const WishlistDetail = () => {
               {item.url && (
                 <span>
                   {" · "}
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-link"
-                  >
+                  <a href={item.url} target="_blank" rel="noreferrer" className="text-link">
                     View Link
                   </a>
                 </span>
               )}
             </div>
             <div className="item-actions">
-              {/* Factory — renders correct actions based on lock state */}
               <ItemActions
                 item={item}
                 wishlistId={id}
@@ -196,10 +211,7 @@ const WishlistDetail = () => {
       )}
 
       <div className="text-center mt-4">
-        <button
-          onClick={() => navigate("/dashboard")}
-          className="btn btn-outline"
-        >
+        <button onClick={() => navigate("/dashboard")} className="btn btn-outline">
           ← Back to Dashboard
         </button>
       </div>

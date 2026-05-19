@@ -29,8 +29,8 @@ const getSharedWishlist = async (shareLink) => {
 };
 
 
-const updateWishlist = async (wishlistId, name) => {
-  const response = await axiosInstance.put(`/api/wishlists/${wishlistId}`, { name });
+const updateWishlist = async (wishlistId, name, dueDate) => {
+  const response = await axiosInstance.put(`/api/wishlists/${wishlistId}`, { name, dueDate });
   return response.data;
 };
 
