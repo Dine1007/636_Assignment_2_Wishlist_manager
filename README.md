@@ -108,3 +108,4 @@ Developer pushes to main -> GitHub Actions triggered -> Checkout code on EC2 run
 
 Extended from: [https://github.com/nahaQUT/sampleapp_IFQ636.git](https://github.com/nahaQUT/sampleapp_IFQ636.git)
 ```
+# trigger
