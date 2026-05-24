@@ -50,7 +50,7 @@ const updateWishlist = async (req, res) => {
     );
     res.json(wishlist);
   } catch (error) {
-    const status = ['Wishlist not found', 'Invalid due date.'].includes(error.message) ? 400 : 500;
+    const status = error.message === 'Wishlist not found' ? 404 : error.message === 'Invalid due date.' ? 400 : 500;
     res.status(status).json({ message: error.message });
   }
 };
