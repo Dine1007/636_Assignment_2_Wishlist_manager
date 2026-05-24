@@ -2,8 +2,8 @@ import axios from "axios";
 
 // Singleton — one shared axios instance for the entire app
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5001",
-  // baseURL: 'http://54.252.51.182:5001', // live
+  // baseURL: "http://localhost:5001",
+  baseURL: "http://54.252.51.182:5001", // live
   headers: { "Content-Type": "application/json" },
 });
 
