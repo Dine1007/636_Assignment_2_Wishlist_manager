@@ -15,7 +15,7 @@ describe('CreateWishlist Function Test', () => {
   it('should create a new wishlist successfully', async () => {
     const req = {
       user: { id: new mongoose.Types.ObjectId() },
-      body: { name: "Sarah's 30th Birthday" }
+      body: { name: "Sarah's 30th Birthday", dueDate: '2026-12-01' }
     };
 
     const createdWishlist = {
@@ -45,7 +45,7 @@ describe('CreateWishlist Function Test', () => {
 
     const req = {
       user: { id: new mongoose.Types.ObjectId() },
-      body: { name: "Sarah's 30th Birthday" }
+      body: { name: "Sarah's 30th Birthday", dueDate: '2026-12-01' }
     };
 
     const res = {
