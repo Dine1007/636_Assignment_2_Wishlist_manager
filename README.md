@@ -104,8 +104,8 @@ The project uses GitHub Actions with a self-hosted runner on AWS EC2 for automat
 Developer pushes to main -> GitHub Actions triggered -> Checkout code on EC2 runner -> Set up Node.js environment -> Install backend ->  dependencies -> Install frontend dependencies & build -> Run backend unit tests -> If tests pass → Deploy with PM2 ->App is live at http://3.25.51.201
 
 
-## Starter Project
+## Start Project
 
-Extended from: [https://github.com/nahaQUT/sampleapp_IFQ636.git](https://github.com/nahaQUT/sampleapp_IFQ636.git)
+Extended from: [https://github.com/nahaQUT/sampleapp_IFQ636.git](https://github.com/nahaQUT/sampleapp_IFQ636.git) 
 ```
 # trigger
