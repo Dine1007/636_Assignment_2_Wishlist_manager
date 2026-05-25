@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const { connectDB } = require('./config/db');
 const { startReminderJob } = require('./services/reminderService');
-
+//const { sendExpiryReminders } = require('./services/reminderService');
 dotenv.config();
 
 const app = express();
@@ -17,7 +17,17 @@ const registerRoutes = (app) => {
   app.use('/api/auth',      require('./routes/authRoutes'));
   app.use('/api/wishlists', require('./routes/wishlistRoutes'));
   app.use('/api/wishlists', require('./routes/itemRoutes'));
-}; // ← this was missing
+
+   //DEMO ROUTE — shows email reminder working live
+  // app.get('/test-reminders', async (req, res) => {
+  //   try {
+  //     await sendExpiryReminders();
+  //     res.json({ message: 'Reminder check ran — check your email and console logs.' });
+  //   } catch (err) {
+  //     res.status(500).json({ error: err.message });
+  //   }
+  // });
+}; 
 
 const initializeApp = (app) => {
   registerMiddleware(app);
