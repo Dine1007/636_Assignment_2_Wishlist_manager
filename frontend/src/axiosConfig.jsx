@@ -3,7 +3,9 @@ import axios from "axios";
 // Singleton — one shared axios instance for the entire app
 const axiosInstance = axios.create({
   //baseURL: "http://localhost:5001",
-  baseURL: 'http://52.62.150.89:5001', // live
+  baseURL:
+    "http://IFN636-giftwishlist-670738384.ap-southeast-2.elb.amazonaws.com:5001", // live
+  // baseURL: 'http://52.62.150.89:5001', // live
   headers: { "Content-Type": "application/json" },
 });
 
