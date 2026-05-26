@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axiosInstance from "../axiosConfig";
@@ -18,7 +18,7 @@ const GuestView = () => {
   const [groupLoading, setGroupLoading] = useState("");
 
   /* ── Fetch wishlist ── */
-  const fetchSharedWishlist = async () => {
+  const fetchSharedWishlist = useCallback(async () => {
     try {
       const res = await axiosInstance.get(`/api/wishlists/share/${shareLink}`);
       setWishlist(res.data.wishlist);
@@ -28,11 +28,11 @@ const GuestView = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [shareLink]);
 
   useEffect(() => {
     fetchSharedWishlist();
-  }, [shareLink]);
+  }, [fetchSharedWishlist]);
 
   /* ── Helpers ── */
   const shareAmt = (price, n) => Math.ceil(price / n);
