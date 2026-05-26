@@ -65,6 +65,21 @@ async function sendExpiryReminders() {
     to:       new Date(now.getTime() + 1.5 * 24 * 60 * 60 * 1000),
     daysLeft: 1,
   },
+
+  // {
+  //   label:    '7-day',
+  //   flag:     'reminder7DaySent',
+  //   from:     new Date(now.getTime() + 1 * 24 * 60 * 60 * 1000),
+  //   to:       new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000),
+  //   daysLeft: 7,
+  // },
+  // {
+  //   label:    '1-day',
+  //   flag:     'reminder1DaySent',
+  //   from:     new Date(now.getTime() + 1 * 24 * 60 * 60 * 1000),
+  //   to:       new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000),
+  //   daysLeft: 1,
+  // },
 ];
 
   for (const window of windows) {
