@@ -1,81 +1,81 @@
-name: Backend CI
+name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main  # Trigger CI on pushes to the main branch
-
+    branches: [main]
 
 jobs:
+  # ─────────────────────────────────────────────
+  # JOB 1: Run tests once on instance-1 only.
+  # If this fails, the deploy job never runs.
+  # ─────────────────────────────────────────────
   test:
     name: Run Tests
+    runs-on: [self-hosted, instance-1]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: yarn install --frozen-lockfile
+
+      - name: Write .env for tests
+        working-directory: ./backend
+        run: echo "${{ secrets.PROD }}" > .env
+
+      - name: Run backend tests
+        working-directory: ./backend
+        run: npm test
+
+  # ─────────────────────────────────────────────
+  # JOB 2: Deploy to BOTH instances in parallel.
+  # Only runs if the test job above passes.
+  # This is what gives you load-balanced deploys.
+  # ─────────────────────────────────────────────
+  deploy:
+    name: Deploy → ${{ matrix.instance }}
+    needs: test
     runs-on: [self-hosted, "${{ matrix.instance }}"]
 
     strategy:
       matrix:
-        node-version: [22] # Test on multiple Node.js versions
         instance: [instance-1, instance-2]
-
-
-    environment: MONGO_URI
+      # If one instance deploy fails, still attempt the other.
+      # Remove this line if you want an all-or-nothing deploy.
+      fail-fast: false
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Set up Node.js
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
 
-    - name: Print Env Secret
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: yarn install --frozen-lockfile
 
-      env:
-        MONGO_URI: ${{ secrets.MONGO_URI }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        PORT: ${{ secrets.PORT }}
-      run: | 
-        echo "Secret 1 is: $MONGO_URI"
-        echo "Secret 2 is: $JWT_SECRET"
-        echo "Secret 3 is: $PORT"
-      
-    - run: pm2 stop all || true
+      - name: Install frontend dependencies and build
+        working-directory: ./frontend
+        run: |
+          rm -rf ./build
+          yarn install --frozen-lockfile
+          yarn build
 
-    # Install dependencies for backend
-    - name: Install Backend Dependencies
-      working-directory: ./backend
-      run: | 
-       npm install --global yarn
-       yarn --version
-       yarn install
-      
-    # Install dependencies for frontend
-    - name: Install Frontend Dependencies
-      working-directory: ./frontend
-      run: |
-        df -h
-        sudo rm -rf ./build
-        yarn install
-        yarn run build
+      # Write the .env from a single GitHub secret called PROD.
 
+      - name: Write .env
+        working-directory: ./backend
+        run: echo "${{ secrets.PROD }}" > .env
 
-    # Run backend tests
-    - name: Run Backend Tests
-      env:
-        MONGO_URI: ${{ secrets.MONGO_URI }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        PORT: ${{ secrets.PORT }}
-      working-directory: ./backend
-      run: npm test
-
-
-    - run: npm ci
-    - run: | 
-        cd ./backend
-        touch .env
-        echo "${{ secrets.PROD }}" > .env
-
-    - run: pm2 start all
-
-    - run: pm2 restart all
+      - name: Deploy with PM2
+        run: pm2 startOrRestart ecosystem.config.js --env production
