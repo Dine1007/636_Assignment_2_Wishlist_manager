@@ -17,7 +17,11 @@ const registerRoutes = (app) => {
   app.use('/api/auth',      require('./routes/authRoutes'));
   app.use('/api/wishlists', require('./routes/wishlistRoutes'));
   app.use('/api/wishlists', require('./routes/itemRoutes'));
-
+  
+// Health check route — required for ALB
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', server: require('os').hostname() });
+});
    //DEMO ROUTE — shows email reminder working live
   // app.get('/test-reminders', async (req, res) => {
   //   try {
